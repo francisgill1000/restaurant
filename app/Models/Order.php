@@ -46,9 +46,10 @@ class Order extends Model
     /** Generate the next sequential MAISON order reference (MZ-3042 …). */
     public static function nextReference(): string
     {
-        $last = static::query()->orderByDesc('id')->value('reference');
-        $n = $last ? (int) str_replace('MZ-', '', $last) : 3041;
+        $max = static::query()->pluck('reference')
+            ->map(fn ($r) => (int) str_replace('MZ-', '', (string) $r))
+            ->max() ?? 3041;
 
-        return 'MZ-'.($n + 1);
+        return 'MZ-'.($max + 1);
     }
 }

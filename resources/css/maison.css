@@ -134,6 +134,8 @@
 }
 .m-cta-btn:disabled { opacity: 0.5; box-shadow: none; }
 .m-cta-btn:disabled::before { display: none; }
+/* glow only, no pulsing ring */
+.m-cta-btn.no-pulse::before { display: none; }
 
 /* Bottom tab bar */
 .m-tabbar {

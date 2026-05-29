@@ -72,7 +72,7 @@ export default function Login() {
                             <span>Remember me on this device</span>
                         </label>
 
-                        <button type="submit" className="m-cta-btn" disabled={processing}>
+                        <button type="submit" className="m-cta-btn no-pulse" disabled={processing}>
                             {processing ? 'Signing in…' : 'Sign in'}
                         </button>
                     </form>

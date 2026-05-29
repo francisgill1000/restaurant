@@ -19,39 +19,38 @@
   flex-direction: column;
 }
 
-/* Tablet + web: real responsive web layout (no phone frame) */
+/* Tablet + web: real responsive web layout (no phone frame).
+   Selectors are scoped under .phone-shell to out-specify the base mobile rules,
+   since the bundler may emit them after this media block. */
 @media (min-width: 768px) {
   .app-stage { display: block; }
   .phone-shell { max-width: none; width: 100%; }
 
-  /* bottom tab bar becomes a sticky top nav */
-  .m-tabbar {
+  /* bottom tab bar becomes a top nav (full-bleed bar, centred links) */
+  .phone-shell .m-tabbar {
     order: -1;
-    position: sticky; top: 0;
     display: flex; justify-content: center; gap: 6px;
+    grid-template-columns: none;
     border-top: 0; border-bottom: 1px solid var(--border-1);
     padding: 10px 24px;
     background: rgba(10,14,12,0.9);
   }
-  .m-tabbar .tab { flex-direction: row; gap: 8px; padding: 9px 16px; border-radius: 10px; font-size: 13.5px; }
-  .m-tabbar .tab .icon { height: auto; }
-  .m-tabbar .tab.active { background: var(--mint-soft); }
-  .m-tabbar .tab.active::before { display: none; }
-  .m-tabbar .tab .cart-badge { position: static; margin: 0 0 0 2px; }
+  .phone-shell .m-tabbar .tab { flex-direction: row; gap: 8px; padding: 9px 16px; border-radius: 10px; font-size: 13.5px; }
+  .phone-shell .m-tabbar .tab .icon { height: auto; }
+  .phone-shell .m-tabbar .tab.active { background: var(--mint-soft); }
+  .phone-shell .m-tabbar .tab.active::before { display: none; }
+  .phone-shell .m-tabbar .tab .cart-badge { position: static; margin-left: 4px; }
 
-  /* centre + widen the page content */
-  .m-appbar, .mb-hero, .m-scroll, .m-cta-sticky { max-width: 1080px; margin-left: auto; margin-right: auto; width: 100%; }
-  .m-scroll { padding: 24px 24px 96px; }
-  .mb-hero { border-radius: 0 0 22px 22px; }
+  /* contain content to a centred column via symmetric padding (robust in flex) */
+  .phone-shell .m-scroll { padding-left: max(24px, calc((100% - 1040px) / 2)); padding-right: max(24px, calc((100% - 1040px) / 2)); padding-bottom: 96px; }
+  .phone-shell .m-appbar { padding-left: max(16px, calc((100% - 1040px) / 2)); padding-right: max(16px, calc((100% - 1040px) / 2)); }
+  .phone-shell .m-cta-sticky { padding-left: max(16px, calc((100% - 1040px) / 2)); padding-right: max(16px, calc((100% - 1040px) / 2)); }
 
-  /* menu rows flow into columns on wider screens */
-  .mb-menu-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 32px; }
+  /* menu rows flow into two columns */
+  .phone-shell .mb-menu-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 32px; }
 
   /* floating cart bar centres within the content column */
-  .mo-cartbar { left: 50%; transform: translateX(-50%); width: min(1080px, calc(100% - 48px)); bottom: 24px; }
-}
-@media (min-width: 1100px) {
-  .mb-menu-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .phone-shell .mo-cartbar { left: 50%; right: auto; transform: translateX(-50%); width: min(1040px, calc(100% - 48px)); bottom: 24px; }
 }
 
 /* ─── Screen scaffold ─── */

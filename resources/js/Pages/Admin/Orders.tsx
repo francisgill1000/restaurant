@@ -1,24 +1,18 @@
 import { Head, router, usePage } from '@inertiajs/react';
-import { Bag, Bike, ChevR, MaisonMark, Receipt } from '@/Components/MaisonIcons';
+import { useState } from 'react';
+import {
+    Bag, Bell, Calendar, Chart, ChefHat, ChevR, Dashboard, Filter, Menu as MenuIcon,
+    MaisonMark, Receipt, Search, Settings, Table2, Users, Utensils,
+} from '@/Components/MaisonIcons';
 
 type OrderType = 'delivery' | 'pickup' | 'dine-in';
 type Status = 'new' | 'preparing' | 'ready' | 'out' | 'completed';
 
 type AdminOrder = {
-    id: number;
-    reference: string;
-    customer: string;
-    phone: string | null;
-    type: OrderType;
-    status: Status;
-    next: Status | null;
-    address: string | null;
-    note: string | null;
-    total: number;
-    eta: string | null;
-    placedAt: string | null;
-    minsAgo: number | null;
-    items: { name: string; qty: number }[];
+    id: number; reference: string; customer: string; phone: string | null;
+    type: OrderType; status: Status; next: Status | null;
+    address: string | null; note: string | null; total: number; eta: string | null;
+    placedAt: string | null; minsAgo: number | null; items: { name: string; qty: number }[];
 };
 
 type PageProps = {
@@ -28,121 +22,179 @@ type PageProps = {
     flash?: { success?: string | null; error?: string | null };
 };
 
-const COLUMNS: { key: Status; label: string }[] = [
-    { key: 'new', label: 'New' },
-    { key: 'preparing', label: 'Preparing' },
-    { key: 'ready', label: 'Ready' },
-    { key: 'out', label: 'Out for delivery' },
-    { key: 'completed', label: 'Completed' },
+const BOARD: { key: Status; title: string; color: string; advance: string }[] = [
+    { key: 'new', title: 'New', color: '#f4b860', advance: 'Accept' },
+    { key: 'preparing', title: 'Preparing', color: '#60a5fa', advance: 'Mark ready' },
+    { key: 'ready', title: 'Ready', color: '#00ffcc', advance: 'Hand off' },
+    { key: 'out', title: 'Out / pickup', color: '#a78bfa', advance: 'Complete' },
 ];
 
-const STATUS_LABEL: Record<Status, string> = {
-    new: 'New', preparing: 'Preparing', ready: 'Ready', out: 'Out', completed: 'Completed',
-};
-
-const TYPE_ICON = { delivery: Bike, pickup: Bag, 'dine-in': Receipt } as const;
+const NAV = [
+    { id: 'overview', label: 'Overview', Icon: Dashboard },
+    { id: 'orders', label: 'Online orders', Icon: Bag },
+    { id: 'floor', label: 'Floor plan', Icon: Table2, live: true },
+    { id: 'kitchen', label: 'Kitchen', Icon: ChefHat },
+    { id: 'reservations', label: 'Reservations', Icon: Calendar },
+    { id: 'menu', label: 'Menu', Icon: Utensils },
+    { id: 'staff', label: 'Staff', Icon: Users },
+    { id: 'reports', label: 'Reports', Icon: Chart },
+] as const;
 
 const fmt = (n: number) => 'AED ' + Number(n).toLocaleString('en-AE', { maximumFractionDigits: 0 });
 
 export default function AdminOrders() {
     const { columns, stats, auth, flash } = usePage<PageProps>().props;
+    const [section, setSection] = useState<string>('orders');
+    const [drawer, setDrawer] = useState(false);
 
-    const advance = (o: AdminOrder) => {
-        if (!o.next) return;
-        router.post(`/admin/orders/${o.id}/advance`, {}, { preserveScroll: true });
-    };
-
+    const advance = (o: AdminOrder) => router.post(`/admin/orders/${o.id}/advance`, {}, { preserveScroll: true });
     const logout = () => router.post('/logout');
+    const nav = (id: string) => { setSection(id); setDrawer(false); };
+
+    const activeOrders = BOARD.flatMap((c) => columns[c.key] ?? []);
+    const deliveryCount = activeOrders.filter((o) => o.type === 'delivery').length;
+
+    const sectionLabel = NAV.find((n) => n.id === section)?.label ?? 'Settings';
 
     return (
         <>
-            <Head title="Online orders" />
-            <div className="adm">
-                <header className="adm-top">
-                    <div className="adm-brand">
-                        <span className="adm-mark"><MaisonMark size={20} /></span>
-                        <div>
-                            <div className="adm-name">MAISON <span>admin</span></div>
-                            <div className="adm-sub">Online orders · live board</div>
+            <Head title={section === 'orders' ? 'Online orders' : sectionLabel} />
+            <div className={`mz-shell ${drawer ? 'drawer-open' : ''}`}>
+                <div className="mz-scrim" onClick={() => setDrawer(false)} />
+
+                <aside className="mz-sidebar">
+                    <div className="brand">
+                        <div className="brand-mark"><MaisonMark size={20} /></div>
+                        <div className="brand-name">MAISON</div>
+                    </div>
+                    <div className="nav-section-title">Service</div>
+                    <div className="nav-items">
+                        {NAV.map((it) => (
+                            <button key={it.id} className={`nav-item ${section === it.id ? 'active' : ''} ${it.id !== 'orders' ? 'soon' : ''}`} onClick={() => nav(it.id)}>
+                                <span className="nav-icon"><it.Icon size={18} /></span>
+                                <span className="nav-label">{it.label}</span>
+                                {it.id === 'orders' && stats.new > 0 && <span className="nav-badge">{stats.new}</span>}
+                                {'live' in it && it.live && <span className="nav-live" />}
+                            </button>
+                        ))}
+                    </div>
+                    <div className="nav-section-title">Account</div>
+                    <div className="nav-items">
+                        <button className={`nav-item soon ${section === 'settings' ? 'active' : ''}`} onClick={() => nav('settings')}>
+                            <span className="nav-icon"><Settings size={18} /></span>
+                            <span className="nav-label">Settings</span>
+                        </button>
+                    </div>
+                    <div className="sidebar-footer">
+                        <div className="avatar">{(auth.user?.name ?? 'A').slice(0, 2).toUpperCase()}</div>
+                        <div style={{ minWidth: 0 }}>
+                            <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-1)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{auth.user?.name}</div>
+                            <button className="nav-item" style={{ padding: 0, fontSize: 11, color: 'var(--text-4)', width: 'auto' }} onClick={logout}>Sign out</button>
                         </div>
                     </div>
-                    <div className="adm-top-right">
-                        <span className="adm-live"><span className="pulse-dot" /> {stats.live} active</span>
-                        <span className="adm-user">{auth.user?.name}</span>
-                        <button className="adm-logout" onClick={logout}>Sign out</button>
-                    </div>
-                </header>
+                </aside>
 
-                {flash?.success && <div className="adm-flash ok">{flash.success}</div>}
-                {flash?.error && <div className="adm-flash err">{flash.error}</div>}
+                <div className="mz-main">
+                    <header className="mz-topbar">
+                        <button className="mz-hamburger" onClick={() => setDrawer(true)} aria-label="Menu"><MenuIcon size={18} /></button>
+                        <h1>{section === 'orders' ? 'Online orders' : sectionLabel}</h1>
+                        {section === 'orders' && <span className="mz-live-pill"><span className="pulse-dot" /> Service live</span>}
+                        <div className="mz-topbar-actions">
+                            <div className="mz-search"><Search size={14} /><input placeholder="Search orders, guests…" /><kbd>⌘K</kbd></div>
+                            <button className="btn btn-ghost btn-icon" aria-label="Notifications"><Bell size={18} /></button>
+                        </div>
+                    </header>
 
-                <section className="adm-stats">
-                    <Stat label="Active orders" value={String(stats.live)} />
-                    <Stat label="New" value={String(stats.new)} accent="warn" />
-                    <Stat label="Preparing" value={String(stats.preparing)} accent="info" />
-                    <Stat label="Completed" value={String(stats.completed)} />
-                    <Stat label="Revenue" value={fmt(stats.revenue)} accent="mint" />
-                </section>
+                    <main className="mz-page">
+                        {flash?.success && <div className="mz-flash ok">{flash.success}</div>}
+                        {flash?.error && <div className="mz-flash err">{flash.error}</div>}
 
-                <section className="adm-board">
-                    {COLUMNS.map((col) => {
-                        const list = columns[col.key] ?? [];
-                        return (
-                            <div key={col.key} className="adm-col">
-                                <div className={`adm-col-head s-${col.key}`}>
-                                    <span className="dot" />
-                                    <span className="t">{col.label}</span>
-                                    <span className="c">{list.length}</span>
+                        {section === 'orders' ? (
+                            <>
+                                <div className="page-header">
+                                    <div>
+                                        <h1 style={{ fontSize: 24 }}>Online orders</h1>
+                                        <p>Live customer orders from the app · delivery · pickup · dine-in</p>
+                                    </div>
+                                    <div className="page-header-actions">
+                                        <button className="btn btn-secondary"><Filter size={15} /> All types</button>
+                                        <button className="btn btn-primary"><Bag size={15} /> {stats.live} active</button>
+                                    </div>
                                 </div>
-                                <div className="adm-col-body">
-                                    {list.length === 0 && <div className="adm-empty">Nothing here</div>}
-                                    {list.map((o) => {
-                                        const TypeIcon = TYPE_ICON[o.type];
+
+                                <div className="res-stat-row">
+                                    <Stat label="Active orders" value={String(stats.live)} delta="live" />
+                                    <Stat label="Order revenue" currency="AED" value={fmt(stats.revenue).replace('AED ', '')} delta="tonight" flat />
+                                    <Stat label="Delivery" value={String(deliveryCount)} delta="en route" flat />
+                                    <Stat label="Completed" value={String(stats.completed)} delta="today" flat />
+                                </div>
+
+                                <div className="kds-board">
+                                    {BOARD.map((col) => {
+                                        const list = columns[col.key] ?? [];
                                         return (
-                                            <article key={o.id} className="adm-card">
-                                                <div className="adm-card-head">
-                                                    <span className="ref">{o.reference}</span>
-                                                    <span className={`type-badge t-${o.type}`}><TypeIcon size={12} /> {o.type}</span>
+                                            <div key={col.key} className="kds-col">
+                                                <div className="kds-col-head">
+                                                    <h4><span className="sw" style={{ background: col.color }} />{col.title}</h4>
+                                                    <span className="ct">{list.length}</span>
                                                 </div>
-                                                <div className="adm-cust">{o.customer}</div>
-                                                {o.address && <div className="adm-addr">{o.address}</div>}
-                                                <ul className="adm-items">
-                                                    {o.items.map((it, i) => (
-                                                        <li key={i}><span className="q">{it.qty}×</span> {it.name}</li>
-                                                    ))}
-                                                </ul>
-                                                {o.note && <div className="adm-note">“{o.note}”</div>}
-                                                <div className="adm-card-foot">
-                                                    <div className="meta">
-                                                        <span className="tot">{fmt(o.total)}</span>
-                                                        <span className="ago">{o.placedAt}{o.minsAgo != null ? ` · ${o.minsAgo}m ago` : ''}</span>
-                                                    </div>
-                                                    {o.next ? (
-                                                        <button className="adm-advance" onClick={() => advance(o)}>
-                                                            {STATUS_LABEL[o.next]} <ChevR size={13} />
-                                                        </button>
-                                                    ) : (
-                                                        <span className="adm-done">Done</span>
-                                                    )}
+                                                <div className="kds-cards">
+                                                    {list.map((o) => {
+                                                        const urgent = (o.minsAgo ?? 0) >= 25 && (o.status === 'new' || o.status === 'preparing');
+                                                        return (
+                                                            <div key={o.id} className={`kds-ticket ${urgent ? 'urgent' : ''}`}>
+                                                                <div className="kds-ticket-head">
+                                                                    <span className="oid">{o.reference}</span>
+                                                                    <span className={`ord-type t-${o.type}`}>{o.type}</span>
+                                                                </div>
+                                                                <div style={{ marginBottom: 8 }}>
+                                                                    <div className="ord-cust">{o.customer}</div>
+                                                                    {o.address && <div className="ord-addr">{o.address}</div>}
+                                                                </div>
+                                                                {o.items.map((it, i) => (
+                                                                    <div key={i} className="kds-item">
+                                                                        <span className="q">{it.qty}×</span>
+                                                                        <span style={{ flex: 1 }}>{it.name}</span>
+                                                                    </div>
+                                                                ))}
+                                                                {o.note && <div className="ord-note">“{o.note}”</div>}
+                                                                <div className="kds-ticket-foot">
+                                                                    <span><span className="ord-total">{fmt(o.total)}</span> <span className="ord-eta">· {o.eta}</span></span>
+                                                                    <button className="kds-advance" onClick={() => advance(o)}>{col.advance} <ChevR size={12} /></button>
+                                                                </div>
+                                                            </div>
+                                                        );
+                                                    })}
+                                                    {list.length === 0 && <div className="kds-empty">No orders</div>}
                                                 </div>
-                                            </article>
+                                            </div>
                                         );
                                     })}
                                 </div>
-                            </div>
-                        );
-                    })}
-                </section>
+                            </>
+                        ) : (
+                            <>
+                                <div className="page-header"><div><h1 style={{ fontSize: 24 }}>{sectionLabel}</h1><p>Part of the full MAISON management suite</p></div></div>
+                                <div className="mz-soon">
+                                    <div className="ic"><Receipt size={24} /></div>
+                                    <h3>{sectionLabel} — coming soon</h3>
+                                    <p>This section is part of the MAISON design. The live build focuses on the Online orders board.</p>
+                                </div>
+                            </>
+                        )}
+                    </main>
+                </div>
             </div>
         </>
     );
 }
 
-function Stat({ label, value, accent }: { label: string; value: string; accent?: 'mint' | 'warn' | 'info' }) {
+function Stat({ label, value, currency, delta, flat }: { label: string; value: string; currency?: string; delta?: string; flat?: boolean }) {
     return (
-        <div className={`adm-stat ${accent ?? ''}`}>
-            <div className="lbl">{label}</div>
-            <div className="val">{value}</div>
+        <div className="stat">
+            <div className="stat-label">{label}</div>
+            <div className="stat-value">{currency && <span className="currency">{currency}</span>}{value}</div>
+            {delta && <div className={`stat-delta ${flat ? 'flat' : 'up'}`}><span>{delta}</span></div>}
         </div>
     );
 }

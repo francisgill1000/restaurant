@@ -48,6 +48,49 @@ export const Receipt = lineIcon([
     'M8 13h8',
 ]);
 
+/* ── Admin shell icons (rect/circle/line glyphs, ported from icons.jsx) ── */
+function Svg({ size = 18, children, fill = 'none', ...rest }: { size?: number; children: React.ReactNode; fill?: string } & Omit<SVGProps<SVGSVGElement>, 'fill' | 'children'>) {
+    return (
+        <svg width={size} height={size} viewBox="0 0 24 24" fill={fill} stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" {...rest}>
+            {children}
+        </svg>
+    );
+}
+
+export const Dashboard = (p: { size?: number }) => (
+    <Svg {...p}><rect x="3" y="3" width="7" height="9" rx="1.5" /><rect x="14" y="3" width="7" height="5" rx="1.5" /><rect x="14" y="12" width="7" height="9" rx="1.5" /><rect x="3" y="16" width="7" height="5" rx="1.5" /></Svg>
+);
+export const Table2 = (p: { size?: number }) => (
+    <Svg {...p}><rect x="3" y="4" width="18" height="16" rx="2" /><line x1="3" y1="10" x2="21" y2="10" /><line x1="9" y1="10" x2="9" y2="20" /><line x1="15" y1="10" x2="15" y2="20" /></Svg>
+);
+export const ChefHat = (p: { size?: number }) => (
+    <Svg {...p}><path d="M6 18h12v2a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1z" /><path d="M6 18c-2 0-3.5-1.6-3.5-3.6 0-1.7 1.2-3.1 2.8-3.5A4.2 4.2 0 0 1 12 5.5a4.2 4.2 0 0 1 6.7 5.4c1.6.4 2.8 1.8 2.8 3.5 0 2-1.5 3.6-3.5 3.6" /></Svg>
+);
+export const Calendar = (p: { size?: number }) => (
+    <Svg {...p}><rect x="3" y="4" width="18" height="17" rx="2" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="3" y1="10" x2="21" y2="10" /></Svg>
+);
+export const Utensils = (p: { size?: number }) => (
+    <Svg {...p}><path d="M5 2v7a2 2 0 0 0 2 2h0a2 2 0 0 0 2-2V2" /><line x1="7" y1="11" x2="7" y2="22" /><path d="M17 2c-1.7 0-3 2-3 5s1 4 2 4v11" /></Svg>
+);
+export const Users = (p: { size?: number }) => (
+    <Svg {...p}><circle cx="9" cy="8" r="4" /><path d="M3 21c0-3.3 2.7-6 6-6s6 2.7 6 6" /><path d="M16 4a4 4 0 0 1 0 8" /><path d="M21 21c0-2.5-1.4-4.7-3.5-5.7" /></Svg>
+);
+export const Chart = (p: { size?: number }) => (
+    <Svg {...p}><path d="M3 3v18h18" /><path d="M7 14l4-4 3 3 5-7" /></Svg>
+);
+export const Settings = (p: { size?: number }) => (
+    <Svg {...p}><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3 1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8 1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z" /></Svg>
+);
+export const Search = (p: { size?: number }) => (
+    <Svg {...p}><circle cx="11" cy="11" r="7" /><path d="M21 21l-4.3-4.3" /></Svg>
+);
+export const Filter = (p: { size?: number }) => (
+    <Svg {...p}><path d="M3 5h18l-7 9v6l-4-2v-4z" /></Svg>
+);
+export const Menu = (p: { size?: number }) => (
+    <Svg {...p}><line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="18" x2="21" y2="18" /></Svg>
+);
+
 /** The MAISON glyph mark. */
 export function MaisonMark({ size = 16 }: { size?: number }) {
     return (

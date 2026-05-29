@@ -19,38 +19,22 @@
   flex-direction: column;
 }
 
-/* Tablet + web: real responsive web layout (no phone frame).
-   Selectors are scoped under .phone-shell to out-specify the base mobile rules,
-   since the bundler may emit them after this media block. */
+/* Tablet + web: SAME layout as mobile, just presented as a centred, full-height
+   app surface on a clean backdrop (no toy phone bezel). Only the screen differs. */
 @media (min-width: 768px) {
-  .app-stage { display: block; }
-  .phone-shell { max-width: none; width: 100%; }
-
-  /* bottom tab bar becomes a top nav (full-bleed bar, centred links) */
-  .phone-shell .m-tabbar {
-    order: -1;
-    display: flex; justify-content: center; gap: 6px;
-    grid-template-columns: none;
-    border-top: 0; border-bottom: 1px solid var(--border-1);
-    padding: 10px 24px;
-    background: rgba(10,14,12,0.9);
+  .app-stage {
+    background:
+      radial-gradient(1200px 760px at 75% -10%, rgba(0,255,204,0.06), transparent 55%),
+      radial-gradient(900px 600px at -10% 110%, rgba(0,255,204,0.04), transparent 55%),
+      var(--bg-0);
   }
-  .phone-shell .m-tabbar .tab { flex-direction: row; gap: 8px; padding: 9px 16px; border-radius: 10px; font-size: 13.5px; }
-  .phone-shell .m-tabbar .tab .icon { height: auto; }
-  .phone-shell .m-tabbar .tab.active { background: var(--mint-soft); }
-  .phone-shell .m-tabbar .tab.active::before { display: none; }
-  .phone-shell .m-tabbar .tab .cart-badge { position: static; margin-left: 4px; }
-
-  /* contain content to a centred column via symmetric padding (robust in flex) */
-  .phone-shell .m-scroll { padding-left: max(24px, calc((100% - 1040px) / 2)); padding-right: max(24px, calc((100% - 1040px) / 2)); padding-bottom: 96px; }
-  .phone-shell .m-appbar { padding-left: max(16px, calc((100% - 1040px) / 2)); padding-right: max(16px, calc((100% - 1040px) / 2)); }
-  .phone-shell .m-cta-sticky { padding-left: max(16px, calc((100% - 1040px) / 2)); padding-right: max(16px, calc((100% - 1040px) / 2)); }
-
-  /* menu rows flow into two columns */
-  .phone-shell .mb-menu-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 32px; }
-
-  /* floating cart bar centres within the content column */
-  .phone-shell .mo-cartbar { left: 50%; right: auto; transform: translateX(-50%); width: min(1040px, calc(100% - 48px)); bottom: 24px; }
+  .phone-shell {
+    max-width: 600px;
+    height: 100dvh;
+    border-left: 1px solid var(--border-1);
+    border-right: 1px solid var(--border-1);
+    box-shadow: 0 0 120px -30px rgba(0,0,0,0.7);
+  }
 }
 
 /* ─── Screen scaffold ─── */

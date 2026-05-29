@@ -372,3 +372,27 @@
 .mo-empty .s { font-size: 12.5px; color: var(--text-4); margin-top: 4px; }
 
 .mo-back { display: inline-flex; align-items: center; gap: 6px; color: var(--text-2); font-size: 13px; background: none; border: 0; font-family: inherit; cursor: pointer; padding: 0; }
+
+/* ─── Customer pages rendered inside the shared web shell ─── */
+.cust { max-width: 1080px; }
+.cust.cust-col { max-width: 720px; }
+.cust-hero { border-radius: 18px; overflow: hidden; height: 260px; margin-bottom: 18px; }
+.cust .mb-sec { margin-top: 22px; }
+@media (min-width: 760px) {
+  .cust .cust-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 28px; align-items: start; }
+  .cust .cust-grid .mb-menu-item { border-bottom: 1px solid var(--border-1); }
+}
+@media (min-width: 1160px) {
+  .cust .cust-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+.cust-cartbar {
+  position: sticky; bottom: 16px;
+  display: flex; align-items: center; gap: 12px;
+  width: 100%; margin-top: 20px;
+  background: var(--mint-500); color: #03130b;
+  border: 0; border-radius: 14px; padding: 14px 18px; cursor: pointer;
+  box-shadow: 0 0 0 1px rgba(0,255,204,0.35), 0 16px 36px -8px var(--mint-glow);
+}
+.cust-cartbar .ct { background: #03130b; color: var(--mint-300); font-family: var(--font-mono); font-size: 12px; font-weight: 600; width: 24px; height: 24px; border-radius: 8px; display: grid; place-items: center; }
+.cust-cartbar .lbl { flex: 1; text-align: left; font-size: 14px; font-weight: 600; }
+.cust-cartbar .tot { font-family: var(--font-mono); font-size: 14px; font-weight: 600; }

@@ -27,6 +27,7 @@ function lineIcon(paths: string[], fillable = false) {
 
 export const Home = lineIcon(['M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z']);
 export const Eye = lineIcon(['M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z', 'M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z']);
+export const EyeOff = lineIcon(['M3 3l18 18', 'M10.6 10.6a3 3 0 0 0 4.2 4.2', 'M9.4 5.2A10.8 10.8 0 0 1 12 5c6 0 10 7 10 7a17.6 17.6 0 0 1-3.4 4.1', 'M6.1 6.1A17.7 17.7 0 0 0 2 12s4 7 10 7a10.8 10.8 0 0 0 3.1-.45']);
 export const Bag = lineIcon(['M6 8h12l1 12a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1z', 'M9 8V6a3 3 0 0 1 6 0v2']);
 export const User = lineIcon(['M12 4a4 4 0 1 0 0 8 4 4 0 0 0 0-8z', 'M4 21a8 8 0 0 1 16 0']);
 export const Plus = lineIcon(['M12 5v14', 'M5 12h14']);
@@ -89,6 +90,16 @@ export const Filter = (p: { size?: number }) => (
 );
 export const Menu = (p: { size?: number }) => (
     <Svg {...p}><line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="18" x2="21" y2="18" /></Svg>
+);
+export const ArrowUp = lineIcon(['M7 17L17 7', 'M7 7h10v10']);
+export const Download = lineIcon(['M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4', 'M7 10l5 5 5-5', 'M12 15V3']);
+export const Flame = lineIcon(['M12 2c1 4 5 5 5 9a5 5 0 0 1-10 0c0-1.5.6-2.6 1.3-3.4C9 9 9.5 8 9 6c2 1 2.5 3 2.2 4.5C12.5 9.5 12.8 6 12 2z']);
+export const Repeat = lineIcon(['M17 2l4 4-4 4', 'M3 12V8a2 2 0 0 1 2-2h16', 'M7 22l-4-4 4-4', 'M21 12v4a2 2 0 0 1-2 2H3']);
+export const Timer = (p: { size?: number }) => (
+    <Svg {...p}><circle cx="12" cy="13" r="8" /><line x1="12" y1="13" x2="12" y2="9" /><line x1="9" y1="2" x2="15" y2="2" /></Svg>
+);
+export const More = (p: { size?: number }) => (
+    <Svg {...p} fill="currentColor"><circle cx="5" cy="12" r="1.4" /><circle cx="12" cy="12" r="1.4" /><circle cx="19" cy="12" r="1.4" /></Svg>
 );
 
 /** The MAISON glyph mark. */

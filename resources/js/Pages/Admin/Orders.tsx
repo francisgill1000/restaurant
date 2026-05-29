@@ -2,8 +2,11 @@ import { Head, router, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 import {
     Bag, Bell, Calendar, Chart, ChefHat, ChevR, Dashboard, Filter, Menu as MenuIcon,
-    MaisonMark, Receipt, Search, Settings, Table2, Users, Utensils,
+    MaisonMark, Search, Settings, Table2, Users, Utensils,
 } from '@/Components/MaisonIcons';
+import {
+    AdminData, Floor, Kitchen, MenuAdmin, Overview, Reports, Reservations, SettingsPage, StaffPage,
+} from '@/Components/Admin/AdminSections';
 
 type OrderType = 'delivery' | 'pickup' | 'dine-in';
 type Status = 'new' | 'preparing' | 'ready' | 'out' | 'completed';
@@ -15,7 +18,7 @@ type AdminOrder = {
     placedAt: string | null; minsAgo: number | null; items: { name: string; qty: number }[];
 };
 
-type PageProps = {
+type PageProps = AdminData & {
     columns: Record<Status, AdminOrder[]>;
     stats: { live: number; new: number; preparing: number; revenue: number; completed: number };
     auth: { user: { name: string; email: string } | null };
@@ -43,7 +46,14 @@ const NAV = [
 const fmt = (n: number) => 'AED ' + Number(n).toLocaleString('en-AE', { maximumFractionDigits: 0 });
 
 export default function AdminOrders() {
-    const { columns, stats, auth, flash } = usePage<PageProps>().props;
+    const props = usePage<PageProps>().props;
+    const { columns, stats, auth, flash } = props;
+    const data: AdminData = {
+        menu: props.menu, categories: props.categories, statusMeta: props.statusMeta,
+        tables: props.tables, kitchen: props.kitchen, reservations: props.reservations,
+        staff: props.staff, daypart: props.daypart, salesWeek: props.salesWeek,
+        sectionPerformance: props.sectionPerformance,
+    };
     const [section, setSection] = useState<string>('orders');
     const [drawer, setDrawer] = useState(false);
 
@@ -70,7 +80,7 @@ export default function AdminOrders() {
                     <div className="nav-section-title">Service</div>
                     <div className="nav-items">
                         {NAV.map((it) => (
-                            <button key={it.id} className={`nav-item ${section === it.id ? 'active' : ''} ${it.id !== 'orders' ? 'soon' : ''}`} onClick={() => nav(it.id)}>
+                            <button key={it.id} className={`nav-item ${section === it.id ? 'active' : ''}`} onClick={() => nav(it.id)}>
                                 <span className="nav-icon"><it.Icon size={18} /></span>
                                 <span className="nav-label">{it.label}</span>
                                 {it.id === 'orders' && stats.new > 0 && <span className="nav-badge">{stats.new}</span>}
@@ -80,7 +90,7 @@ export default function AdminOrders() {
                     </div>
                     <div className="nav-section-title">Account</div>
                     <div className="nav-items">
-                        <button className={`nav-item soon ${section === 'settings' ? 'active' : ''}`} onClick={() => nav('settings')}>
+                        <button className={`nav-item ${section === 'settings' ? 'active' : ''}`} onClick={() => nav('settings')}>
                             <span className="nav-icon"><Settings size={18} /></span>
                             <span className="nav-label">Settings</span>
                         </button>
@@ -172,16 +182,14 @@ export default function AdminOrders() {
                                     })}
                                 </div>
                             </>
-                        ) : (
-                            <>
-                                <div className="page-header"><div><h1 style={{ fontSize: 24 }}>{sectionLabel}</h1><p>Part of the full MAISON management suite</p></div></div>
-                                <div className="mz-soon">
-                                    <div className="ic"><Receipt size={24} /></div>
-                                    <h3>{sectionLabel} — coming soon</h3>
-                                    <p>This section is part of the MAISON design. The live build focuses on the Online orders board.</p>
-                                </div>
-                            </>
-                        )}
+                        ) : section === 'overview' ? <Overview d={data} onNav={nav} />
+                            : section === 'floor' ? <Floor d={data} />
+                            : section === 'kitchen' ? <Kitchen d={data} />
+                            : section === 'reservations' ? <Reservations d={data} />
+                            : section === 'menu' ? <MenuAdmin d={data} />
+                            : section === 'staff' ? <StaffPage d={data} />
+                            : section === 'reports' ? <Reports d={data} />
+                            : <SettingsPage />}
                     </main>
                 </div>
             </div>

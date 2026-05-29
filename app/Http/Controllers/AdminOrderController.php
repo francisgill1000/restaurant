@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\MenuItem;
 use App\Models\Order;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Carbon;
@@ -22,6 +23,14 @@ class AdminOrderController extends Controller
 
         $active = $orders->whereNotIn('status', ['completed']);
 
+        $menu = MenuItem::orderBy('sort')->get()->map(fn (MenuItem $m) => [
+            'id' => $m->ext_id, 'cat' => $m->category, 'name' => $m->name, 'desc' => $m->description,
+            'price' => $m->price, 'tags' => $m->tags ?? [], 'avail' => $m->available,
+            'sold' => $m->sold, 'rating' => $m->rating,
+        ]);
+
+        $show = config('maison_showcase');
+
         return Inertia::render('Admin/Orders', [
             'columns' => $columns,
             'stats'   => [
@@ -31,6 +40,17 @@ class AdminOrderController extends Controller
                 'revenue'   => (int) $orders->sum('total'),
                 'completed' => $orders->where('status', 'completed')->count(),
             ],
+            // Management showcase data for the rest of the admin suite.
+            'menu'         => $menu,
+            'categories'   => $menu->pluck('cat')->unique()->values(),
+            'statusMeta'   => $show['statusMeta'],
+            'tables'       => $show['tables'],
+            'kitchen'      => $show['kitchen'],
+            'reservations' => $show['reservations'],
+            'staff'        => $show['staff'],
+            'daypart'      => $show['daypart'],
+            'salesWeek'    => $show['salesWeek'],
+            'sectionPerformance' => $show['sectionPerformance'],
         ]);
     }
 
